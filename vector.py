@@ -53,7 +53,7 @@ def build_model(docs_path):
             temp = [item for item in index[j] if item[0] == i+1]
             if len(temp) != 0:
                 norm += temp[0][1]*temp[0][1]
-        norm_list.append(norm)
+        norm_list.append(math.sqrt(norm))
     return terms, calculate_weight(index, N, norm_list)
 
 def calculate_weight(index, N, norm_list):
@@ -71,5 +71,9 @@ file.close()
 file2 = open('D:\\Courses\\CS336\\model\\index.sav', 'wb')
 pickle.dump(index, file2)
 file2.close()
+
+print(terms)
+print(index)
+
 print(len(terms))
 print(len(index))
