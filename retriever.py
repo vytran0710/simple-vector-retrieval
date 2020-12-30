@@ -3,9 +3,9 @@ from nltk.corpus import stopwords
 import re
 import math
 
-file = open("D:\\Github\\simple-vector-retrieval\\temp\\terms.sav", 'rb')
+file = open(r"C:\Users\User\Documents\GitHub\simple-vector-retrieval\temp\terms.sav", 'rb')
 terms = pickle.load(file)
-file2 = open("D:\\Github\\simple-vector-retrieval\\temp\\index.sav", 'rb')
+file2 = open(r"C:\Users\User\Documents\GitHub\simple-vector-retrieval\temp\index.sav", 'rb')
 index = pickle.load(file2)
 
 query = input()
@@ -15,24 +15,22 @@ def preprocess_text(text):
     processed_text = processed_text.replace("’", "'")
     processed_text = processed_text.replace("“", '"')
     processed_text = processed_text.replace("”", '"')
-    non_words = re.compile(r"[^A-Za-z0-9']+")
+    non_words = re.compile(r"[^A-Za-z']+")
     processed_text = re.sub(non_words, ' ', processed_text)
     return processed_text
 
 def get_words_from_text(text):
     processed_text = preprocess_text(text)
-    filtered_words = [word for word in processed_text.split() if word not in stopwords.words('english')]
+    words = processed_text.split()
+    unique_words = list(set(words))
+    filtered_words = [word for word in words if word not in stopwords.words('english')]
     return filtered_words
 
-words = list(set(get_words_from_text(query)))
-
-search_list = []
-for i in range(len(words)):
-    if words[i] in terms:
-        search_list.append(index[terms.index(words[i])].copy())
-
-
-def get_search_result(search_list):
+def get_search_result(words):
+    search_list = []
+    for i in range(len(words)):
+        if words[i] in terms:
+            search_list.append(index[terms.index(words[i])].copy())
     norm = 0
     norm_list = []
     for i in range(len(search_list)):
@@ -58,7 +56,8 @@ def get_search_result(search_list):
                     temp[1] = round(temp[1] * norm_list[i], 4)
                     res.insert(k, tuple(temp))
                     break
-    return res
+    sorted_res = sorted(res, key=lambda tup: tup[1])
+    return sorted_res
 
-print(get_search_result(search_list))
-print(len(get_search_result(search_list)))
+print(get_search_result(get_words_from_text(query)))
+print(len(get_search_result(get_words_from_text(query))))
