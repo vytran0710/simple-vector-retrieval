@@ -4,20 +4,25 @@ import os
 import pickle
 from nltk.corpus import stopwords
 import math
+from nltk.stem import WordNetLemmatizer
+lemmatizer = WordNetLemmatizer() 
 
 def preprocess_text(text):
     processed_text = text.lower()
     processed_text = processed_text.replace("’", "'")
     processed_text = processed_text.replace("“", '"')
     processed_text = processed_text.replace("”", '"')
-    non_words = re.compile(r"[^A-Za-z0-9']+")
+    non_words = re.compile(r"[^A-Za-z']+")
     processed_text = re.sub(non_words, ' ', processed_text)
     return processed_text
 
 def get_words_from_text(text):
     processed_text = preprocess_text(text)
     filtered_words = [word for word in processed_text.split() if word not in stopwords.words('english')]
-    return filtered_words
+    processed_words = []
+    for i in range(len(filtered_words)):
+        processed_words.append(lemmatizer.lemmatize(filtered_words[i]))
+    return processed_words
 
 def get_text_from_file(filename):
     with open(filename, encoding='cp1252', mode='r') as f:
@@ -29,7 +34,7 @@ def build_model(docs_path):
     index = []
     norm_list = []
     N = 0
-    for doc_file in os.listdir(docs_path):
+    for doc_file in sorted(os.listdir(docs_path),key=lambda x: int(os.path.splitext(x)[0])):
         filename = os.path.join(docs_path, doc_file)
         N += 1
         text = get_text_from_file(filename)
