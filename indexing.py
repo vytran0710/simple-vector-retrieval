@@ -68,7 +68,6 @@ def indexing(docs_path):
         for j in range(len(index)):
             temp = [item for item in index[j] if item[0] == i+1]
             if len(temp) != 0:
-                print(temp[0][1])
                 norm += math.pow(temp[0][1], 2)
         norm_list.append(math.sqrt(norm))
     for i in range(len(index)):
@@ -79,4 +78,13 @@ def indexing(docs_path):
 
     return terms, index
 
-print(indexing(r"D:\Courses\CS336\New folder"))
+terms, index = indexing(r"D:\Github\simple-vector-retrieval\Cranfield\Cranfield")
+file = open(r'D:\Github\simple-vector-retrieval\index\terms.sav', 'wb')
+pickle.dump(terms, file)
+file.close()
+file2 = open(r'D:\Github\simple-vector-retrieval\index\index.sav', 'wb')
+pickle.dump(index, file2)
+file2.close()
+
+print(terms)
+print(index)
