@@ -85,6 +85,3 @@ file.close()
 file2 = open(r'D:\Github\simple-vector-retrieval\index\index.sav', 'wb')
 pickle.dump(index, file2)
 file2.close()
-
-print(terms)
-print(index)
