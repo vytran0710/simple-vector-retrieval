@@ -29,11 +29,13 @@ def get_text_from_file(filename):
         text = f.read()
     return text
 
-def build_model(docs_path):
+def indexing(docs_path):
     terms = []
     index = []
     norm_list = []
     N = 0
+
+    # Indexing postings
     for doc_file in sorted(os.listdir(docs_path),key=lambda x: int(os.path.splitext(x)[0])):
         filename = os.path.join(docs_path, doc_file)
         N += 1
@@ -52,33 +54,29 @@ def build_model(docs_path):
                     if index[temp_index][i][0] == N:
                         index[temp_index][i] = (N, index[temp_index][i][1] + 1)
                         break
+
+    # Calculate weights
+    for i in range(len(index)):
+        for j in range(len(index[i])):
+            temp = list(index[i][j])
+            temp[1] = index[i][j][1] * (1/len(index[i])) # Formula: TF * IDF (IDF = 1 / ndoc(t))
+            index[i][j] = tuple(temp)
+
+    # Normalization
     for i in range(N):
         norm = 0
         for j in range(len(index)):
             temp = [item for item in index[j] if item[0] == i+1]
             if len(temp) != 0:
-                norm += temp[0][1]*temp[0][1]
+                print(temp[0][1])
+                norm += math.pow(temp[0][1], 2)
         norm_list.append(math.sqrt(norm))
-    return terms, calculate_weight(index, N, norm_list)
-
-def calculate_weight(index, N, norm_list):
     for i in range(len(index)):
-            for j in range(len(index[i])):
-                temp = list(index[i][j])
-                temp[1] = round(index[i][j][1] * (math.log(N/len(index[i]) + 1)) / norm_list[temp[0]-1], 4)
-                index[i][j] = tuple(temp)
-    return index
+        for j in range(len(index[i])):
+            temp = list(index[i][j])
+            temp[1] = round(index[i][j][1] / norm_list[index[i][j][0]-1], 4)
+            index[i][j] = tuple(temp)
 
-terms, index = build_model("D:\\Courses\\CS336\\Cranfield\\Cranfield")
-file = open('D:\\Courses\\CS336\\model\\terms.sav', 'wb')
-pickle.dump(terms, file)
-file.close()
-file2 = open('D:\\Courses\\CS336\\model\\index.sav', 'wb')
-pickle.dump(index, file2)
-file2.close()
+    return terms, index
 
-print(terms)
-print(index)
-
-print(len(terms))
-print(len(index))
+print(indexing(r"D:\Courses\CS336\New folder"))
