@@ -18,7 +18,7 @@ def preprocess_text(text):
 
 def get_words_from_text(text):
     processed_text = preprocess_text(text)
-    filtered_words = [word for word in processed_text.split() if word not in stopwords.words('english')]
+    filtered_words = [word for word in processed_text.split()]
     processed_words = []
     for i in range(len(filtered_words)):
         processed_words.append(lemmatizer.lemmatize(filtered_words[i]))
@@ -59,7 +59,7 @@ def indexing(docs_path):
     for i in range(len(index)):
         for j in range(len(index[i])):
             temp = list(index[i][j])
-            temp[1] = index[i][j][1] * (1/len(index[i])) # Formula: TF * IDF (IDF = 1 / ndoc(t))
+            temp[1] = index[i][j][1] * math.log(N/len(index[i])) # Formula: TF * IDF (IDF = log(N / ndoc(t)))
             index[i][j] = tuple(temp)
 
     # Normalization
@@ -73,7 +73,7 @@ def indexing(docs_path):
     for i in range(len(index)):
         for j in range(len(index[i])):
             temp = list(index[i][j])
-            temp[1] = round(index[i][j][1] / norm_list[index[i][j][0]-1], 4)
+            temp[1] = index[i][j][1] / norm_list[index[i][j][0]-1]
             index[i][j] = tuple(temp)
 
     return terms, index

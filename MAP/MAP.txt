@@ -1,0 +1,31 @@
+-- Đã lọc stopwords - stemmed --
+
+IDF = 1 / ndoc(t): 0.2230945785555008
+IDF = N / ndoc(t): 0.2230945785555008
+IDF = log((N / ndoc(t)) + 1)): 0.39220353086938126
+IDF = log(1 / ndoc(t)): 0.2580797147672708
+IDF = log(N / ndoc(t)): 0.3866720184345973
+
+-- Chưa lọc stopwords - stemmed --
+
+IDF = 1 / ndoc(t): 0.21151164603524206
+IDF = N / ndoc(t): 0.21151164603524206
+IDF = log((N / ndoc(t)) + 1)): 0.38827668156270384
+IDF = abs(log(1 / ndoc(t))): 0.19199480428067087
+IDF = log(N / ndoc(t)): 0.38486514791190296
+
+-- Lọc stopwords - không stemmed --
+
+IDF = 1 / ndoc(t): 0.20794477736753908
+IDF = N / ndoc(t): 0.20794477736753908
+IDF = log((N / ndoc(t)) + 1)): 0.38512274954349446
+IDF = abs(log(1 / ndoc(t))): 0.2487615566108652
+IDF = log(N / ndoc(t)): 0.37878676804812045
+
+-- Không lọc stopwords - không stemmed --
+
+IDF = 1 / ndoc(t): 0.1992095913133619
+IDF = N / ndoc(t): 0.1992095913133619
+IDF = log((N / ndoc(t)) + 1)): 0.3748495198132295
+IDF = abs(log(1 / ndoc(t))): 0.09800732836944347
+IDF = log(N / ndoc(t)): 0.37464456899430026
