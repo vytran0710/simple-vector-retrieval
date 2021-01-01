@@ -6,6 +6,7 @@ from nltk.corpus import stopwords
 import math
 from nltk.stem import WordNetLemmatizer
 from collections import Counter
+import bisect
 lemmatizer = WordNetLemmatizer()
 
 def preprocess_text(text):
@@ -64,8 +65,53 @@ def get_search_results(query, terms, index):
 
     return sorted(result, key=lambda tup: tup[1], reverse=True)
 
+def evaluateMAP(test_query, test_path, terms, index):
+    with open(test_query, encoding='cp1252', mode='r') as f:
+        temp = f.readlines()
+    temp = [x.strip().split('\t') for x in temp]
+    query = []
+    for i in range(len(temp)):
+        query.append(temp[i][1])
+    goal = []
+    for doc_file in sorted(os.listdir(test_path),key=lambda x: int(os.path.splitext(x)[0])):
+        filename = os.path.join(test_path, doc_file)
+        with open(filename, encoding='cp1252', mode='r') as f:
+            temp2 = f.readlines()
+        temp2 = [x.strip().split() for x in temp2]
+        temp3 = []
+        for i in range(len(temp2)):
+            temp3.append(int(temp2[i][1]))
+        goal.append(temp3)
+    average_precision = []
+    for i in range(len(goal)):
+        temp4 = get_search_results(query[i], terms, index)
+        temp5 = [i[0] for i in temp4]
+        precision = []
+        recall = []
+        count = 0
+        n = 0
+        temp_precision = []
+        for j in range(len(temp5)):
+            if temp5[j] in goal[i]:
+                count += 1
+            n += 1
+            recall.append(count / len(goal[i]))
+            precision.append(count / n)
+        for j in range(10):
+            if j/10 < max(recall):
+                temp6 = bisect.bisect_right(recall, j/10)
+                temp_precision.append(max(precision[temp6:]))
+        if len(temp_precision) != 0:
+            average_precision.append(sum(temp_precision) / 10)
+        else:
+            average_precision.append(0)
+    if len(average_precision) != 0:
+        return sum(average_precision) / len(average_precision)
+    else:
+        return 0
+    
 file = open(r"D:\Github\simple-vector-retrieval\index\terms.sav", 'rb')
 terms = pickle.load(file)
 file2 = open(r"D:\Github\simple-vector-retrieval\index\index.sav", 'rb')
 index = pickle.load(file2)
-print(get_search_results("what similarity laws must be obeyed when constructing aeroelastic models of heated high speed aircraft", terms, index))
+print(evaluateMAP(r"D:\Github\simple-vector-retrieval\Cranfield\TEST\query.txt", r"D:\Github\simple-vector-retrieval\Cranfield\TEST\RES", terms, index))
